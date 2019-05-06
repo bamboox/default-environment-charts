@@ -2,17 +2,19 @@ pipeline {
   options {
     disableConcurrentBuilds()
   }
+  
   agent {
     label "jenkins-maven"
   }
   environment {
-    DEPLOY_NAMESPACE = "change-me"
+    DEPLOY_NAMESPACE = "staging"
   }
   stages {
     stage('Validate Environment') {
       steps {
         container('maven') {
           dir('env') {
+            sh "helm  init --client-only --stable-repo-url http://mirror.azure.cn/kubernetes/charts/"
             sh 'jx step helm build'
           }
         }
@@ -25,6 +27,7 @@ pipeline {
       steps {
         container('maven') {
           dir('env') {
+            sh "helm  init --client-only --stable-repo-url http://mirror.azure.cn/kubernetes/charts/"
             sh 'jx step helm apply'
           }
         }
